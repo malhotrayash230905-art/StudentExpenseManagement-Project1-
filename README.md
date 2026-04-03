@@ -2,6 +2,8 @@
 
 A sleek, modern, and interactive expense tracking application designed for students. Built with **HTML**, **Vanilla CSS**, and **Supabase** for persistent data storage.
 
+### 🔗 [Live Demo - Try it out!](https://student-expense-management-project1.vercel.app/)
+
 ## 🚀 Features
 - **Smart Budgeting**: Set monthly budgets and track spending in real-time.
 - **Expense Categorization**: Group spending into categories (Food, Travel, etc.) for better insights.
