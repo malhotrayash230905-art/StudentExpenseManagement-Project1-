@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusCoin | Expense Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Flatpickr for elegant Date/Time Selection -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Login to CampusCoin</h3>
+                <button class="close-modal" id="close-login-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="login-options">
+                    <button class="btn btn-google" id="google-login">
+                        <i class="fab fa-google"></i>
+                        Continue with Google
+                    </button>
+                    <div class="divider">
+                        <span>or</span>
+                    </div>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-input" id="login-email" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <div class="password-wrapper" style="position: relative;">
+                                <input type="password" class="form-input" id="login-password" placeholder="Enter password" required style="padding-right: 40px;">
+                                <i class="fas fa-eye toggle-password" data-target="login-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-gray);"></i>
+                            </div>
+                        </div>
+                        <div class="form-group remember-me">
+                            <label class="form-label">
+                                <input type="checkbox" id="remember-me">
+                                <span>Remember me</span>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" id="submit-auth-btn">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span id="auth-btn-text">Login</span>
+                        </button>
+                    </form>
+                    <div class="register-link">
+                        <p>Don't have an account? <a href="#" id="show-register">Sign up</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create Account</h3>
+                <button class="close-modal" id="close-register-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="login-options">
+                    <button class="btn btn-google" id="google-register">
+                        <i class="fab fa-google"></i>
+                        Sign up with Google
+                    </button>
+                    <div class="divider">
+                        <span>or</span>
+                    </div>
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-input" id="register-email" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-input" id="register-username" placeholder="Choose a username" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <div class="password-wrapper" style="position: relative;">
+                                <input type="password" class="form-input" id="register-password" placeholder="Create a password" required style="padding-right: 40px;">
+                                <i class="fas fa-eye toggle-password" data-target="register-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-gray);"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password</label>
+                            <div class="password-wrapper" style="position: relative;">
+                                <input type="password" class="form-input" id="register-confirm-password" placeholder="Confirm your password" required style="padding-right: 40px;">
+                                <i class="fas fa-eye toggle-password" data-target="register-confirm-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-gray);"></i>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-user-plus"></i>
+                            Create Account
+                        </button>
+                    </form>
+                    <div class="register-link">
+                        <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Category Modal -->
+    <div id="delete-category-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Delete Category</h3>
+                <button class="close-modal" id="close-delete-category-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="delete-category-message">Are you sure you want to delete this entire category? All expenses in this category will be permanently removed.</p>
+                <div class="modal-buttons">
+                    <button class="btn btn-danger" id="confirm-category-delete">
+                        <i class="fas fa-trash"></i>
+                        Delete Category
+                    </button>
+                    <button class="btn" id="cancel-category-delete">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget Removal Modal -->
+    <div id="budget-removal-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Select Budget to Remove</h3>
+                <button class="close-modal" id="close-budget-removal-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="budget-removal-message">Select which budget expense you want to remove from this category:</p>
+                <div id="budget-expenses-list" class="expenses-list">
+                    <!-- Budget expenses will be dynamically added here -->
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn btn-danger" id="confirm-budget-removal">
+                        <i class="fas fa-trash"></i>
+                        Remove Selected
+                    </button>
+                    <button class="btn" id="cancel-budget-removal">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <div class="logo" style="cursor: pointer;" onclick="document.querySelector('[data-section=\'dashboard\']').click()" title="Go to Dashboard">
+                    <img src="logo.png" alt="CampusCoin Logo" class="brand-logo">
+                    <h1>CampusCoin</h1>
+                </div>
+            </div>
+            <div class="header-options">
+                <div id="welcome-user" class="welcome-user hidden">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="username-display"></span>
+                </div>
+                <div class="option-card" id="profile-btn">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </div>
+                <div class="option-card" id="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span id="login-text">Login</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-option active" data-section="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="sidebar-option" data-section="category-spend">
+                <i class="fas fa-wallet"></i>
+                <span>Category Spend</span>
+            </div>
+            <div class="sidebar-option" data-section="add-expense">
+                <i class="fas fa-plus-circle"></i>
+                <span>Create Budget</span>
+            </div>
+            <div class="sidebar-option" data-section="monthly-statement">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Monthly Statement</span>
+            </div>
+            <div class="sidebar-option" data-section="alerts">
+                <i class="fas fa-bell"></i>
+                <span>Alerts & Notifications</span>
+            </div>
+            <div class="sidebar-option" data-section="analytics">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
+            </div>
+            <div class="sidebar-option" id="logout-btn" data-section="logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard Overview
+                </h2>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Total Budget</h3>
+                            <span class="budget-amount">$0</span>
+                        </div>
+                        <p class="card-subtitle">Budget allocated for current month</p>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Spent: $0</span>
+                                <span>0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Expenses</h3>
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <p class="card-subtitle">Last 3 expenses added</p>
+                        <div class="recent-expenses-grid" id="recent-expenses">
+                            <!-- Recent expenses will be added here dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Upcoming Alerts</h3>
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <p class="card-subtitle">Categories nearing their limits (within 5% of threshold)</p>
+                        <div id="dashboard-alerts">
+                            <!-- Upcoming alerts will be added here dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Category Spend Section -->
+            <section id="category-spend" class="content-section hidden">
+                <h2 class="section-title">
+                    <i class="fas fa-wallet"></i>
+                    Category Spend
+                </h2>
+                <div class="budgets-grid-container" id="budgets-grid-container">
+                    <!-- Budget cards will be added here in grid format -->
+                </div>
+            </section>
+
+            <!-- Add Expense / Create Budget Section -->
+            <section id="add-expense" class="content-section hidden">
+                <h2 class="section-title" id="form-section-title">
+                    <i class="fas fa-plus-circle"></i>
+                    Create Budget
+                </h2>
+                <div class="card-container">
+                    <div class="card wide-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Budget & Expense Details</h3>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label class="form-label">Budget Category</label>
+                                <input type="text" class="form-input" id="budget-category" placeholder="e.g., Food, Textbooks, Transportation">
+                            </div>
+                        </div>
+                        <div class="form-row" id="budget-fields-row">
+                            <div class="form-group half" id="budget-amount-wrapper">
+                                <label class="form-label">Budget Amount ($)</label>
+                                <input type="number" class="form-input" id="budget-amount" placeholder="Enter total budget amount">
+                            </div>
+                            <div class="form-group half" id="threshold-wrapper">
+                                <label class="form-label">Alert Threshold (%)</label>
+                                <input type="range" class="slider" id="alert-threshold" min="50" max="100" value="80">
+                                <div class="progress-label">
+                                    <span>Alert at: </span>
+                                    <span id="threshold-value">80%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="form-separator" id="expense-separator">
+                        <div id="expense-setup-fields">
+                            <div class="form-row" id="expense-amount-row">
+                                <div class="form-group half w-full">
+                                    <label class="form-label">Expense Amount ($)</label>
+                                    <input type="number" class="form-input" id="expense-amount" placeholder="Enter expense amount">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" class="form-input" id="expense-date">
+                                </div>
+                                <div class="form-group half">
+                                    <label class="form-label">Time</label>
+                                    <input type="time" class="form-input" id="expense-time">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Description (Optional)</label>
+                                <input type="text" class="form-input" id="expense-description" placeholder="Enter description">
+                            </div>
+                        </div>
+                        <div class="form-buttons">
+                            <button class="btn btn-primary" id="create-budget-expense-btn">
+                                <i class="fas fa-check"></i>
+                                Save Entry
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Monthly Statement Section -->
+            <section id="monthly-statement" class="content-section hidden">
+                <h2 class="section-title">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    Monthly Statement
+                </h2>
+                <div class="card-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Monthly Calendar</h3>
+                            <div class="btn" id="prev-month">
+                                <i class="fas fa-chevron-left"></i>
+                            </div>
+                            <span id="current-month">March 2023</span>
+                            <div class="btn" id="next-month">
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                        <hr class="form-separator" style="margin: -5px 0 20px 0;">
+                        <div class="calendar" id="calendar">
+                            <!-- Calendar will be generated here -->
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Monthly Expenses</h3>
+                            <span id="monthly-total">Total: $0</span>
+                        </div>
+                        <hr class="form-separator" style="margin: -5px 0 20px 0;">
+                        <p class="card-subtitle">All expenses for current month</p>
+                        <div class="table-container">
+                            <table class="expense-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expense-table-body">
+                                    <!-- Expense rows will be added here dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Alerts Section -->
+            <section id="alerts" class="content-section hidden">
+                <h2 class="section-title">
+                    <i class="fas fa-bell"></i>
+                    Active Alerts
+                </h2>
+                <div class="alerts-container">
+                    <div class="alerts-header">
+                        <h3>Budget categories that need attention (threshold reached/exceeded)</h3>
+                        <span id="alert-count-full">0 alerts</span>
+                    </div>
+                    <div id="alerts-container-full" class="alerts-grid">
+                        <!-- All threshold-exceeded alerts will be added here dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="analytics" class="content-section hidden">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-line"></i>
+                    Expense Analytics
+                </h2>
+                <div class="analytics-container">
+                    <!-- Pie Chart Section -->
+                    <div class="analytics-card">
+                        <div class="analytics-header">
+                            <h3 class="analytics-title">Category Breakdown</h3>
+                            <div class="month-selector">
+                                <label for="pie-month-select">Select Month:</label>
+                                <select id="pie-month-select" class="month-select">
+                                    <!-- Months will be populated dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                        <p class="analytics-subtitle">Expense distribution for selected month</p>
+                        <div class="chart-wrapper">
+                            <canvas id="pie-chart"></canvas>
+                        </div>
+                        <div id="pie-no-data" class="no-data-message hidden">No expenses for this month</div>
+                    </div>
+
+                    <!-- Bar Chart Section -->
+                    <div class="analytics-card">
+                        <div class="analytics-header">
+                            <h3 class="analytics-title">Monthly Expense Comparison</h3>
+                            <div class="month-multi-selector">
+                                <label>Select Months (click to toggle):</label>
+                                <div id="bar-month-buttons" class="month-button-container">
+                                    <!-- Month buttons will be populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                        <p class="analytics-subtitle">Click on month buttons to compare expenses</p>
+                        <div class="chart-wrapper">
+                            <canvas id="bar-chart"></canvas>
+                        </div>
+                        <div id="bar-no-data" class="no-data-message hidden">Select months to view expenses</div>
+                    </div>
+
+                    <!-- Worm Chart Section -->
+                    <div class="analytics-card">
+                        <div class="analytics-header">
+                            <h3 class="analytics-title">Budget vs Expense Comparison</h3>
+                            <div class="month-selector">
+                                <label for="worm-month-select">Select Month:</label>
+                                <select id="worm-month-select" class="month-select">
+                                    <!-- Months will be populated dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                        <p class="analytics-subtitle">Comparing monthly budget allocation vs monthly spending</p>
+                        
+                        <!-- Worm Chart -->
+                        <div class="worm-chart-container">
+                            <canvas id="worm-chart"></canvas>
+                        </div>
+                        
+                        <!-- Summary Table -->
+                        <div id="worm-summary" class="worm-summary">
+                            <!-- Summary table will be populated dynamically -->
+                        </div>
+                        <div id="worm-no-data" class="no-data-message hidden">Select a month to view comparison</div>
+                    </div>
+                </div>
+            </section>
+            <!-- Profile Section -->
+            <section id="profile" class="content-section hidden">
+                <h2 class="section-title">
+                    <i class="fas fa-user-circle"></i>
+                    Student Profile
+                </h2>
+                
+                <div class="profile-grid">
+                    <!-- Header Card -->
+                    <div class="dashboard-card profile-header-card">
+                        <div class="avatar-wrapper">
+                            <img src="https://ui-avatars.com/api/?name=User&background=20b2aa&color=fff&size=120" id="profile-avatar-preview" class="avatar-preview" alt="Profile Avatar">
+                            <div class="avatar-upload-layer">
+                                <label for="avatar-upload" class="avatar-upload-btn">
+                                    <i class="fas fa-camera"></i> Edit
+                                </label>
+                                <input type="file" id="avatar-upload" accept="image/*" class="hidden">
+                            </div>
+                        </div>
+                        <div class="profile-header-info">
+                            <h3 id="profile-display-name">Campus Student</h3>
+                            <p class="profile-username">@<span id="profile-display-username">student</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Academic Info Card -->
+                    <div class="dashboard-card profile-details-card">
+                        <h3><i class="fas fa-graduation-cap"></i> Academic & Personal Info</h3>
+                        <form id="academic-info-form" class="profile-form mt-15">
+                            <div class="form-group">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-input" id="profile-fullname" placeholder="John Doe">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Username</label>
+                                <input type="text" class="form-input" id="profile-username-input" placeholder="johndoe123">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email Address (Read Only)</label>
+                                <input type="email" class="form-input" id="profile-email" disabled style="opacity: 0.6; cursor: not-allowed;">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">University / College</label>
+                                <input type="text" class="form-input" id="profile-university" placeholder="State University">
+                            </div>
+                            <div class="form-group grid-2-col">
+                                <div>
+                                    <label class="form-label">Major/Field of Study</label>
+                                    <input type="text" class="form-input" id="profile-major" placeholder="Computer Science">
+                                </div>
+                                <div>
+                                    <label class="form-label">Graduation Year</label>
+                                    <input type="number" class="form-input" id="profile-grad-year" placeholder="2026" min="2020" max="2040">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Living Situation</label>
+                                <select class="form-input" id="profile-living-situation">
+                                    <option value="" disabled selected>Select living situation</option>
+                                    <option value="On-Campus">On-Campus (Dorms)</option>
+                                    <option value="Off-Campus">Off-Campus (Apartment)</option>
+                                    <option value="Commuting">Commuting from Home</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-15" style="width: 100%;">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Financial Baselines Card -->
+                    <div class="dashboard-card profile-financial-card">
+                        <h3><i class="fas fa-wallet"></i> Financial Baselines</h3>
+                        <form id="financial-baselines-form" class="profile-form mt-15">
+                            <div class="form-group">
+                                <label class="form-label">Monthly Income / Allowance ($)</label>
+                                <input type="number" step="0.01" class="form-input" id="profile-monthly-income" placeholder="0.00" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Current Savings Goal</label>
+                                <div class="grid-2-col" style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                                    <input type="text" class="form-input" id="profile-goal-name" placeholder="e.g. Spring Break Trip">
+                                    <input type="number" step="0.01" class="form-input" id="profile-goal-amount" placeholder="Amount ($)">
+                                </div>
+                            </div>
+                            <div class="form-group grid-2-col">
+                                <div>
+                                    <label class="form-label">Semester Start</label>
+                                    <input type="date" class="form-input flatpickr-no-time" id="profile-semester-start">
+                                </div>
+                                <div>
+                                    <label class="form-label">Semester End</label>
+                                    <input type="date" class="form-input flatpickr-no-time" id="profile-semester-end">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-15" style="width: 100%; background: var(--brand-secondary);">
+                                <i class="fas fa-save"></i> Save Financials
+                            </button>
+                        </form>
+
+                        <!-- Dynamic Monthly Math Tool -->
+                        <div class="monthly-remainder-tool mt-20" style="padding-top: 20px; border-top: 1px solid var(--border-gray);">
+                            <h3><i class="fas fa-calculator"></i> Remaining Allowance Calculator</h3>
+                            <div class="form-group mt-10">
+                                <label class="form-label">Select Month to calculate remainder:</label>
+                                <select id="profile-month-calculator-select" class="form-input">
+                                    <!-- Options populated dynamically based on expense history -->
+                                </select>
+                            </div>
+                            <div class="remainder-display mt-15" style="padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center;">
+                                <div style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 5px;">Allowance vs Spent</div>
+                                <div id="profile-remainder-status" style="font-size: 1.5rem; font-weight: bold; color: var(--text-white);">Select a month above</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
+    <!-- Flatpickr Library -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="script.js"></script>
+</body>
+</html>
